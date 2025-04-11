@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dividend History for {{ stock_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        /* Reset */
+        body, html {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Background */
+        body {
+            background: linear-gradient(180deg, #e3f2fd, #90caf9);
+            color: #333;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            background: url('{{ url_for('static', filename='Dividend_Analysis_Image.png') }}') no-repeat center center/cover;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            color: white;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+        }
+
+        .btn {
+            background: #ff9800;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0px 10px 20px rgba(255, 152, 0, 0.4);
+        }
+
+        /* News Section */
+        .news-container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 900px;
+            margin: -50px auto 30px;
+            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .news-container h1 {
+            color: #ff9800;
+            font-weight: 700;
+        }
+
+        .dividend-history {
+            list-style: none;
+            padding: 0;
+            text-align: center;
+        }
+
+        .dividend-history li {
+            font-size: 1.2rem;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .dividend-amount {
+            font-weight: bold;
+            color: #ff9800;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            font-weight: 600;
+            color: #0077cc;
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #005999;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="overlay"></div>
+        <div class="hero-content">
+            <h1>Unlock the Power of Passive Income</h1>
+            <p>Explore Dividend Opportunities</p>
+            <a href="#news-section" class="btn">See Dividend History</a>
+        </div>
+    </div>
+
+    <!-- News Section -->
+    <div id="news-section" class="news-container">
+        <h1>Dividend History for {{ stock_name.upper() }}</h1>
+        {% if dividend_data %}
+            <ul class="dividend-history">
+                {% for date, dividend in dividend_data.items() %}
+                    <li>{{ date }}: <span class="dividend-amount">{{ dividend }}</span></li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No dividend data available for this stock symbol.</p>
+        {% endif %}
+        <a href="/index" class="back-link">Go Back</a>
+    </div>
+</body>
+</html>

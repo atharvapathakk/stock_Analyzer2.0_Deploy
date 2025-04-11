@@ -1,0 +1,381 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>Stock News - {{ stock_name }}</title>-->
+<!--    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">-->
+<!--    <style>-->
+<!--        /* Reset */-->
+<!--        body, html {-->
+<!--            margin: 0;-->
+<!--            padding: 0;-->
+<!--            box-sizing: border-box;-->
+<!--            font-family: 'Poppins', sans-serif;-->
+<!--        }-->
+
+<!--        /* Background */-->
+<!--        body {-->
+<!--            background: linear-gradient(180deg, #dceefb, #b0daf1); /* Faint sky blue gradient */-->
+<!--            margin: 0;-->
+<!--            padding: 0;-->
+<!--            color: #333; /* Neutral text color for readability */-->
+<!--            perspective: 1500px; /* Perspective for 3D effects */-->
+<!--        }-->
+
+<!--        /* Cursor Effects */-->
+<!--        body::before {-->
+<!--            content: '';-->
+<!--            position: fixed;-->
+<!--            top: 0;-->
+<!--            left: 0;-->
+<!--            width: 100%;-->
+<!--            height: 100%;-->
+<!--            background: radial-gradient(circle, rgba(0, 119, 204, 0.1) 20%, transparent 80%);-->
+<!--            pointer-events: none;-->
+<!--            z-index: 999;-->
+<!--            transform: translate(-50%, -50%) scale(2);-->
+<!--            transition: transform 0.2s ease;-->
+<!--        }-->
+<!--        body:hover::before {-->
+<!--            transform: translate(-50%, -50%) scale(1);-->
+<!--        }-->
+
+<!--        /* Hero Section */-->
+<!--        .hero {-->
+<!--            width: 100%;-->
+<!--            height: 100vh;-->
+<!--            display: flex;-->
+<!--            flex-direction: column;-->
+<!--            justify-content: center;-->
+<!--            align-items: center;-->
+<!--            text-align: center;-->
+<!--            position: relative;-->
+<!--            overflow: hidden;-->
+<!--            transform-style: preserve-3d; /* Enable 3D transformations */-->
+<!--        }-->
+
+<!--        .hero .background {-->
+<!--            position: absolute;-->
+<!--            top: 0;-->
+<!--            left: 0;-->
+<!--            right: 0;-->
+<!--            bottom: 0;-->
+<!--            background: url('{{ url_for('static', filename='stock_market_news_image.png') }}') no-repeat center center/cover;-->
+<!--            filter: brightness(0.8) blur(2px);-->
+<!--            z-index: -1;-->
+<!--            transform: scale(1.05) translateZ(-50px);-->
+<!--        }-->
+
+<!--        .hero-content h1 {-->
+<!--            font-size: 4rem;-->
+<!--            margin-bottom: 10px;-->
+<!--            color: white;-->
+<!--            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);-->
+<!--            animation: popIn 1.5s ease;-->
+<!--            transform: translateZ(50px);-->
+<!--        }-->
+
+<!--        .hero-content p {-->
+<!--            font-size: 1.5rem;-->
+<!--            margin-bottom: 20px;-->
+<!--            color: #f0f0f0;-->
+<!--            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);-->
+<!--            transform: translateZ(30px);-->
+<!--        }-->
+
+<!--        .hero .btn {-->
+<!--            background: linear-gradient(135deg, #0077cc, #005999);-->
+<!--            color: white;-->
+<!--            border: none;-->
+<!--            padding: 15px 30px;-->
+<!--            border-radius: 30px;-->
+<!--            cursor: pointer;-->
+<!--            font-size: 1.2rem;-->
+<!--            font-weight: 600;-->
+<!--            transition: transform 0.3s ease, box-shadow 0.3s ease;-->
+<!--            text-transform: uppercase;-->
+<!--            transform: translateZ(40px);-->
+<!--        }-->
+
+<!--        .hero .btn:hover {-->
+<!--            transform: translateY(-5px) translateZ(50px);-->
+<!--            box-shadow: 0px 8px 20px rgba(0, 119, 204, 0.6);-->
+<!--        }-->
+
+<!--        /* Keyframes */-->
+<!--        @keyframes popIn {-->
+<!--            0% {-->
+<!--                opacity: 0;-->
+<!--                transform: translateZ(-100px) scale(0.8);-->
+<!--            }-->
+<!--            100% {-->
+<!--                opacity: 1;-->
+<!--                transform: translateZ(50px) scale(1);-->
+<!--            }-->
+<!--        }-->
+
+<!--        /* News Section */-->
+<!--        .news-container {-->
+<!--            background: #ffffff; /* White background */-->
+<!--            color: #333; /* Neutral text color */-->
+<!--            padding: 30px;-->
+<!--            border-radius: 20px;-->
+<!--            width: 85%;-->
+<!--            max-width: 1000px;-->
+<!--            margin: 40px auto;-->
+<!--            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.2);-->
+<!--            position: relative;-->
+<!--            transform: translateZ(20px);-->
+<!--        }-->
+
+<!--        .news-container h1 {-->
+<!--            text-align: center;-->
+<!--            font-weight: 600;-->
+<!--            margin-bottom: 25px;-->
+<!--            color: #0077cc;-->
+<!--            text-shadow: 1px 1px 5px rgba(0, 119, 204, 0.5);-->
+<!--        }-->
+
+<!--        .news-item {-->
+<!--            margin-bottom: 25px;-->
+<!--            animation: fadeIn 1.2s ease;-->
+<!--        }-->
+
+<!--        .news-item h3 {-->
+<!--            font-weight: 600;-->
+<!--            margin: 0;-->
+<!--            color: #0e4b7b;-->
+<!--        }-->
+
+<!--        .news-item p {-->
+<!--            font-size: 1rem;-->
+<!--            margin: 5px 0;-->
+<!--        }-->
+
+<!--        .news-item a {-->
+<!--            color: #0077cc; /* Link color */-->
+<!--            text-decoration: none;-->
+<!--            font-weight: 600;-->
+<!--            transition: color 0.3s ease, transform 0.3s ease;-->
+<!--        }-->
+
+<!--        .news-item a:hover {-->
+<!--            color: #005999;-->
+<!--            text-decoration: underline;-->
+<!--            transform: translateX(5px);-->
+<!--        }-->
+
+<!--        hr {-->
+<!--            border: 1px solid #ccc;-->
+<!--        }-->
+
+<!--        .back-link {-->
+<!--            display: block;-->
+<!--            text-align: center;-->
+<!--            margin-top: 30px;-->
+<!--            font-weight: 600;-->
+<!--            color: #0077cc;-->
+<!--            text-decoration: none;-->
+<!--            font-size: 1.2rem;-->
+<!--            transition: color 0.3s ease, transform 0.3s ease;-->
+<!--        }-->
+
+<!--        .back-link:hover {-->
+<!--            color: #005999;-->
+<!--            transform: translateY(-3px);-->
+<!--        }-->
+
+<!--        @keyframes fadeIn {-->
+<!--            0% {-->
+<!--                opacity: 0;-->
+<!--                transform: translateY(20px);-->
+<!--            }-->
+<!--            100% {-->
+<!--                opacity: 1;-->
+<!--                transform: translateY(0);-->
+<!--            }-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body>-->
+<!--    &lt;!&ndash; Hero Section &ndash;&gt;-->
+<!--    <div class="hero">-->
+<!--        <div class="background"></div>-->
+<!--        <div class="hero-content">-->
+<!--            <h1>Stock Stories that Matter</h1>-->
+<!--            <p>The best investment you can make is in knowledge, for it pays the highest dividends</p>-->
+<!--            <a href="#news-section" class="btn">See Stock News</a>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; News Section &ndash;&gt;-->
+<!--    <div id="news-section" class="news-container">-->
+<!--        <h1>News for {{ stock_name.upper() }}</h1>-->
+
+<!--        {% if news_data %}-->
+<!--            {% for news_item in news_data %}-->
+<!--                <div class="news-item">-->
+<!--                    <h3>{{ news_item.title }}</h3>-->
+<!--                    <p>Publisher: {{ news_item.publisher }}</p>-->
+<!--                    <a href="{{ news_item.link }}" target="_blank">Read more</a>-->
+<!--                </div>-->
+<!--                <hr>-->
+<!--            {% endfor %}-->
+<!--        {% else %}-->
+<!--            <p>No news available for this stock symbol.</p>-->
+<!--        {% endif %}-->
+
+<!--        <a href="/index" class="back-link">Go Back</a>-->
+<!--    </div>-->
+<!--</body>-->
+<!--</html>-->
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock News</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        .hero {
+            position: relative;
+            text-align: center;
+            color: white;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(to right, rgba(0,0,0,0.7), rgba(0,0,0,0.3)), url('{{ url_for('static', filename='stock_market_news_image.png') }}') no-repeat center/cover;
+        }
+
+        .hero-content {
+            z-index: 2;
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #ff6f61;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #e64a43;
+        }
+
+        .news-container {
+            max-width: 900px;
+            margin: -50px auto 20px;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .news-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .news-item:hover {
+            transform: scale(1.02);
+        }
+
+        .news-image {
+            width: 140px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .news-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .news-meta {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .read-more {
+            color: #ff6f61;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .read-more:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Stock Stories that Matter</h1>
+            <p>The best investment you can make is in knowledge, for it pays the highest dividends.</p>
+            <a href="#news-section" class="btn">See Stock News</a>
+        </div>
+    </div>
+
+    <div class="news-container" id="news-section">
+        <h2>Stock News for {{ stock_name }}</h2>
+
+        {% if news_data %}
+            {% for news in news_data %}
+                <div class="news-item">
+                    {% if news.image %}
+                        <img src="{{ news.image }}" alt="News Image" class="news-image">
+                    {% endif %}
+                    <div>
+                        <div class="news-title">{{ news.title }}</div>
+                        <div class="news-meta">📅 Published: {{ news.providerPublishTime }} 📰 Source: {{ news.publisher }}</div>
+                        <div class="news-summary">{{ news.summary }}</div>
+                        <a class="read-more" href="{{ news.link }}" target="_blank">🔗 Read More</a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No news available for this stock.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

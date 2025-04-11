@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signup</title>
+    <style>
+                * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: row;
+            height: 100vh;
+        }
+
+        .left-section {
+            flex: 1;
+            background-color: #f5f5f5;
+        }
+
+        .right-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #8ec5fc, #e0c3fc);
+        }
+
+        .form-container {
+            width: 100%;
+            max-width: 400px;
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logo span {
+            color: #007bff;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+
+        input {
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        button {
+            padding: 0.75rem;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .social-login {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .social-login img {
+            width: 40px;
+            height: 40px;
+            margin: 0 0.5rem;
+            cursor: pointer;
+        }
+
+        .sign-in-link {
+            text-align: center;
+            margin-top: 1rem;
+            color: #007bff;
+        }
+
+        .sign-in-link a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        .sign-in-link a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="right-section">
+        <div class="form-container">
+            <div class="logo">
+                Stock<span>Analyzer</span>
+            </div>
+
+        <h2>Signup</h2>
+        <form action="{{ url_for('main.signup') }}" method="POST">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="{{ url_for('main.login') }}">Login</a></p>
+    </div>
+    </div>
+</body>
+</html>
+
+

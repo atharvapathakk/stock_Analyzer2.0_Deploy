@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balance Sheet for {{ stock_name.upper() }}</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(180deg, #f0f8ff, #e6f7ff);
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            color: #0056b3;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .year-box {
+            background: linear-gradient(135deg, #f7f9fc, #eef7ff);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+            transition: transform 0.3s ease;
+        }
+
+        .year-box:hover {
+            transform: scale(1.02);
+        }
+
+        .year-box h2 {
+            font-size: 1.8rem;
+            color: #0077cc;
+            border-bottom: 3px solid #0077cc;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px 15px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #0056b3;
+            color: #ffffff;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        tr:hover {
+            background: #d0ebff;
+            transition: background 0.3s;
+        }
+
+        a {
+            display: block;
+            width: fit-content;
+            margin: 20px auto;
+            padding: 12px 20px;
+            text-align: center;
+            color: #ffffff;
+            background: #0077cc;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        a:hover {
+            background: #005999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Company Income Statements for {{ stock_name.upper() }}</h1>
+        {% if incomeStatementDict %}
+            {% for date, sheet in incomeStatementDict.items() %}
+                <div class="year-box">
+                    <h2>Date: {{ date }}</h2>
+                    <table>
+                        <tr>
+                            <th>Item</th>
+                            <th>Value</th>
+                        </tr>
+                        {% for item, value in sheet.items() %}
+                            <tr>
+                                <td>{{ item.replace('_', ' ').title() }}</td>
+                                <td>{{ value | default('N/A') }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p style="text-align:center; font-size: 1.2rem; color: #d9534f;">No Income Statement data available for {{ stock_name }} stock symbol.</p>
+        {% endif %}
+        <a href="/index">Go Back</a>
+    </div>
+</body>
+</html>

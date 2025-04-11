@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Information</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+            transition: 0.3s;
+        }
+        .navbar-brand:hover {
+            color: #f8d210 !important;
+            transform: scale(1.1);
+        }
+
+        /* Glassmorphism Form Container */
+        .form-container {
+            max-width: 700px;
+            margin: 60px auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .form-container h2 {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        /* Form Elements */
+        .form-label {
+            font-weight: 600;
+        }
+        .form-control,
+        .form-select {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            transition: 0.3s ease-in-out;
+        }
+        .form-control:focus,
+        .form-select:focus {
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Buttons */
+        .btn-custom {
+            width: 100%;
+            margin: 10px 0;
+            font-weight: 600;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+        .btn-custom i {
+            margin-right: 10px;
+        }
+        .btn-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 40px;
+            background: rgba(0, 0, 0, 0.8);
+            text-align: center;
+            padding: 12px;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><i class="fas fa-chart-line"></i> Stock Info</a>
+            <a class="btn btn-outline-light logout-btn" href="{{ url_for('main.logout') }}">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="form-container">
+        <h2><i class="fas fa-info-circle"></i> Stock Information Portal</h2>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="country" class="form-label">Select Country</label>
+                <select class="form-select" id="country" name="country" required>
+                    <option value="India">India</option>
+                    <option value="USA">USA</option>
+                    <option value="Germany">Germany</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="stock_name" class="form-label">Stock Symbol</label>
+                <input type="text" class="form-control" id="stock_name" name="stock_name" placeholder="Enter Stock Symbol" required>
+            </div>
+            <button formaction="/get_news" type="submit" class="btn btn-primary btn-custom"><i class="fas fa-newspaper"></i> Get News</button>
+            <button formaction="/get_dividends" type="submit" class="btn btn-secondary btn-custom"><i class="fas fa-dollar-sign"></i> Get Dividend History</button>
+            <button formaction="/get_balanceSheet" type="submit" class="btn btn-success btn-custom"><i class="fas fa-balance-scale"></i> Get Balance Sheet</button>
+            <button formaction="/get_stock_recommendation" type="submit" class="btn btn-warning btn-custom"><i class="fas fa-user-check"></i> Get Analyst Recommendation</button>
+            <button formaction="/get_Income_Statement" type="submit" class="btn btn-dark btn-custom"><i class="fas fa-file-invoice"></i> Get Income Statements</button>
+            <button formaction="/Financial_Analysis" type="submit" class="btn btn-danger btn-custom"><i class="fas fa-chart-bar"></i> Get Financial Analysis</button>
+            <button formaction="/Buy_And_sell_Signals" type="submit" class="btn btn-light btn-custom"><i class="fas fa-exchange-alt"></i> Get Buy/Sell Signals</button>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Stock Information App. All Rights Reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
