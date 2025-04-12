@@ -35,7 +35,7 @@ def view_users():
 
 
 # Route for login
-@main.route('/', methods=['GET', 'POST'])
+@main.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
@@ -109,7 +109,7 @@ def logout():
     return redirect(url_for('main.login'))  # Redirect to the login page after logout
 
 # Protected route for logged-in users
-@main.route('/index')
+@main.route('/')
 @login_required
 def index():
     return render_template('index.html')
