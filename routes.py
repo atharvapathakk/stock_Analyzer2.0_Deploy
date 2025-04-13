@@ -13,7 +13,9 @@ import requests
 # Create Blueprint for the main routes
 main = Blueprint('main', __name__)
 
-NEWS_API_KEY = "3db8fcc3c31e405492f6849159dad9e6"  # Sign up at https://newsapi.org
+#NEWS_API_KEY = "3db8fcc3c31e405492f6849159dad9e6"  # Sign up at https://newsapi.org
+NEWS_API_KEY = os.environ.get("NEWS_API_KEY")
+
 
 @main.route('/admin/delete_user/<int:user_id>', methods=['POST'])
 def delete_user(user_id):
@@ -376,10 +378,8 @@ def latest_price(stock_name):
 
 
 
-import yfinance as yf
-
 def fetch_news(stock_name):
-    """Fetch stock-related news using NewsAPI."""
+
     url = f"https://newsapi.org/v2/everything?q={stock_name}&sortBy=publishedAt&apiKey={NEWS_API_KEY}"
 
     try:
@@ -388,25 +388,21 @@ def fetch_news(stock_name):
 
         if news_data.get("status") == "ok":
             articles = news_data.get("articles", [])
-            formatted_news = []
-
-            for article in articles[:10]:  # Limit to 10 news articles
-                formatted_news.append({
-                    "title": article.get("title", "No Title"),
-                    "providerPublishTime": article.get("publishedAt", "Unknown Date"),
-                    "publisher": article.get("source", {}).get("name", "Unknown Source"),
-                    "summary": article.get("description", "No summary available."),
-                    "link": article.get("url"),
-                    "image": article.get("urlToImage", "")
-                })
-            return formatted_news
+            return [{
+                "title": article.get("title", "No Title"),
+                "providerPublishTime": article.get("publishedAt", "Unknown Date"),
+                "publisher": article.get("source", {}).get("name", "Unknown Source"),
+                "summary": article.get("description", "No summary available."),
+                "link": article.get("url"),
+                "image": article.get("urlToImage", "")
+            } for article in articles[:10]]
         else:
+            print("News API error:", news_data.get("message", "Unknown error"))
             return []
-
     except Exception as e:
         print("Error fetching news:", e)
         return []
-
+    
 def fetch_dividends(stock_name):
     try:
         data = yf.Ticker(stock_name).dividends
