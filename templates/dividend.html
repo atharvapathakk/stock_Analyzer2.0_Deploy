@@ -155,7 +155,7 @@
         {% else %}
             <p>No dividend data available for this stock symbol.</p>
         {% endif %}
-        <button onclick="window.history.back()" class="btn btn-secondary">Go Back .</button>
+        <a href="{{ url_for('main.index') }}" class="btn btn-primary">Go Back</a>
     </div>
 </body>
 </html>
