@@ -13,8 +13,8 @@ import requests
 # Create Blueprint for the main routes
 main = Blueprint('main', __name__)
 
-#NEWS_API_KEY = "3db8fcc3c31e405492f6849159dad9e6"  # Sign up at https://newsapi.org
-NEWS_API_KEY = os.environ.get("NEWS_API_KEY")
+NEWS_API_KEY = "3db8fcc3c31e405492f6849159dad9e6"  # Sign up at https://newsapi.org
+
 
 
 @main.route('/admin/delete_user/<int:user_id>', methods=['POST'])
@@ -117,15 +117,24 @@ def index():
 
 # Route for fetching news (ensure it's only defined once)
 @main.route('/get_news', methods=['POST'])
-def get_news():
-    stock_symbol = request.form.get('stock_name', '').strip()
+def stock_news():
+    stock_symbol = request.form['stock_symbol'].upper()
+    try:
+        ticker = yf.Ticker(stock_symbol)
+        news = ticker.news[:10]  # limit to 10 latest news items
+        formatted_news = []
 
-    if not stock_symbol:
-        return "Error: Stock symbol is required.", 400
+        for item in news:
+            formatted_news.append({
+                'title': item.get('title', 'No Title'),
+                'publisher': item.get('publisher', 'Unknown'),
+                'link': item.get('link', '#')
+            })
 
-    news_data = fetch_news(stock_symbol)
+        return render_template('news.html', stock_name=stock_symbol, news_data=formatted_news)
 
-    return render_template('news.html', stock_name=stock_symbol.upper(), news_data=news_data)
+    except Exception as e:
+        return render_template('news.html', stock_name=stock_symbol, news_data=[], error=str(e))
 
 # Route for fetching dividends (ensure it's only defined once)
 @main.route('/get_dividends', methods=['POST'])
@@ -858,8 +867,3 @@ def getTechnicalBuyAndSellSignals(stock_name):
     plt.close()  # Close the plot to free memory
 
     print(f"Plot saved at {plot_path}")
-
-
-
-
-
