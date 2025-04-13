@@ -131,7 +131,7 @@
         {% else %}
             <p style="text-align:center; font-size: 1.2rem; color: #d9534f;">No Income Statement data available for {{ stock_name }} stock symbol.</p>
         {% endif %}
-        <a href="/index">Go Back</a>
+        <a href="{{ url_for('main.index') }}">Go Back</a>
     </div>
 </body>
 </html>
