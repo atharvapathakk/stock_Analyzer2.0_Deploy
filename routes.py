@@ -117,24 +117,15 @@ def index():
 
 # Route for fetching news (ensure it's only defined once)
 @main.route('/get_news', methods=['POST'])
-def stock_news():
-    stock_symbol = request.form['stock_symbol'].upper()
-    try:
-        ticker = yf.Ticker(stock_symbol)
-        news = ticker.news[:10]  # limit to 10 latest news items
-        formatted_news = []
+def get_news():
+    stock_symbol = request.form.get('stock_name', '').strip()
 
-        for item in news:
-            formatted_news.append({
-                'title': item.get('title', 'No Title'),
-                'publisher': item.get('publisher', 'Unknown'),
-                'link': item.get('link', '#')
-            })
+    if not stock_symbol:
+        return "Error: Stock symbol is required.", 400
 
-        return render_template('news.html', stock_name=stock_symbol, news_data=formatted_news)
+    news_data = fetch_news(stock_symbol)
 
-    except Exception as e:
-        return render_template('news.html', stock_name=stock_symbol, news_data=[], error=str(e))
+    return render_template('news.html', stock_name=stock_symbol.upper(), news_data=news_data)
 
 # Route for fetching dividends (ensure it's only defined once)
 @main.route('/get_dividends', methods=['POST'])
