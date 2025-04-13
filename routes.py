@@ -66,11 +66,16 @@ def signup():
         username = request.form['username']
         password = request.form['password']
 
-        # Hashing the password with pbkdf2:sha256
-        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+        # Check if the username already exists
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            flash('Username already exists. Please choose another.', 'danger')
+            return redirect(url_for('main.signup'))
 
-        # Storing user info in the database
+        # Hash password and create new user
+        hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
         new_user = User(username=username, password=hashed_password)
+
         db.session.add(new_user)
         db.session.commit()
 
@@ -78,26 +83,6 @@ def signup():
         return redirect(url_for('main.login'))
 
     return render_template('signup.html')
-
-# @main.route('/signup', methods=['GET', 'POST'])
-# def signup():
-#     if current_user.is_authenticated:
-#         return redirect(url_for('main.index'))
-#
-#     if request.method == 'POST':
-#         username = request.form['username']
-#         password = request.form['password']
-#
-#         # Storing user info in the database without hashing
-#         new_user = User(username=username, password=password)
-#         db.session.add(new_user)
-#         db.session.commit()
-#
-#         flash('Your account has been created!', 'success')
-#         return redirect(url_for('main.login'))
-#
-#     return render_template('signup.html')
-
 
 
 # Route for logout
@@ -109,7 +94,7 @@ def logout():
     return redirect(url_for('main.login'))  # Redirect to the login page after logout
 
 # Protected route for logged-in users
-@main.route('/')
+@main.route('/index')
 @login_required
 def index():
     return render_template('index.html')
@@ -142,6 +127,7 @@ def get_news():
 
 # Route for fetching dividends (ensure it's only defined once)
 @main.route('/get_dividends', methods=['POST'])
+@login_required
 def get_dividends():
 
     stock_symbol = request.form.get('stock_name', '').strip()
