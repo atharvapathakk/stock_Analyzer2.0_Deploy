@@ -124,51 +124,28 @@ def index():
 
 
 
-def fetch_news(stock_symbol):
-    """Fetch news from Yahoo Finance RSS feed"""
-    try:
-        # URL encode the stock symbol
-        encoded_symbol = urllib.parse.quote(stock_symbol)
-        rss_url = f"https://feeds.finance.yahoo.com/rss/2.0/headline?s={encoded_symbol}&region=US&lang=en-US"
-        
-        feed = feedparser.parse(rss_url)
-        news_items = []
-        
-        for entry in feed.entries[:10]:  # Get first 3 articles
-            # Parse and format the publication date
-            published = ""
-            if hasattr(entry, 'published_parsed'):
-                published = datetime(*entry.published_parsed[:6]).strftime('%Y-%m-%d %H:%M')
-            
-            news_items.append({
-                'title': entry.get('title', 'No title available'),
-                'publisher': 'Yahoo Finance',
-                'link': entry.get('link', '#'),
-                'providerPublishTime': published,
-                'summary': entry.get('summary', 'No summary available'),
-                'image': get_image_from_description(entry.get('description', ''))
-            })
-        
-        return news_items
-    
-    except Exception as e:
-        print(f"Error fetching news: {str(e)}")
-        return []
-
-def get_image_from_description(description):
-    """Extract image URL from HTML description if available"""
-    if '<img' in description:
-        start = description.find('src="') + 5
-        end = description.find('"', start)
-        return description[start:end]
-    return ''
 
 @main.route('/get_news', methods=['POST'])
 def get_news():
-    stock_symbol = request.form.get('stock_name', '').strip().upper()
+    stock_symbol = request.form.get('stock_name', '').strip()
+    stock_extension = request.form.get('country', '').strip()
+
+    country_to_extension = {
+        "India": ".ns",
+        "USA": "",
+        "United Kingdom": ".uk",
+        "Germany": ".de",
+        "Canada": ".ca",
+        "Australia": ".aus"
+    }
 
     if not stock_symbol:
         return "Error: Stock symbol is required.", 400
+    if stock_extension not in country_to_extension:
+        return f"Error: Invalid country selected: {stock_extension}.", 400
+
+    stockExtension = country_to_extension[stock_extension]
+    stock_name = f"{stock_symbol.lower()}{stockExtension}"
 
     news_data = fetch_news(stock_symbol)
     
@@ -439,6 +416,46 @@ def latest_price(stock_name):
         print("Error fetching latest price:", e)
         return "N/A"  # Return "N/A" if there's an error fetching the latest price
 
+
+
+def fetch_news(stock_symbol):
+    """Fetch news from Yahoo Finance RSS feed"""
+    try:
+        # URL encode the stock symbol
+        encoded_symbol = urllib.parse.quote(stock_symbol)
+        rss_url = f"https://feeds.finance.yahoo.com/rss/2.0/headline?s={encoded_symbol}&region=US&lang=en-US"
+        
+        feed = feedparser.parse(rss_url)
+        news_items = []
+        
+        for entry in feed.entries[:10]:  # Get first 3 articles
+            # Parse and format the publication date
+            published = ""
+            if hasattr(entry, 'published_parsed'):
+                published = datetime(*entry.published_parsed[:6]).strftime('%Y-%m-%d %H:%M')
+            
+            news_items.append({
+                'title': entry.get('title', 'No title available'),
+                'publisher': 'Yahoo Finance',
+                'link': entry.get('link', '#'),
+                'providerPublishTime': published,
+                'summary': entry.get('summary', 'No summary available'),
+                'image': get_image_from_description(entry.get('description', ''))
+            })
+        
+        return news_items
+    
+    except Exception as e:
+        print(f"Error fetching news: {str(e)}")
+        return []
+
+def get_image_from_description(description):
+    """Extract image URL from HTML description if available"""
+    if '<img' in description:
+        start = description.find('src="') + 5
+        end = description.find('"', start)
+        return description[start:end]
+    return ''
 
 
 
