@@ -9,6 +9,10 @@ import matplotlib.pyplot as plt
 import os
 from flask import jsonify
 import requests
+import feedparser
+from flask import render_template, request
+from datetime import datetime
+import urllib.parse
 
 #working on news section deepseek etc , problem is in render , hve to check env variables or the structing of fetching api is the soltuion for it 
 
@@ -118,10 +122,7 @@ def index():
 
 
 
-import feedparser
-from flask import render_template, request
-from datetime import datetime
-import urllib.parse
+
 
 def fetch_news(stock_symbol):
     """Fetch news from Yahoo Finance RSS feed"""
