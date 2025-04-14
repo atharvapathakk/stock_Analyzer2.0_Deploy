@@ -147,7 +147,7 @@ def get_news():
     stockExtension = country_to_extension[stock_extension]
     stock_name = f"{stock_symbol.lower()}{stockExtension}"
 
-    news_data = fetch_news(stock_symbol)
+    news_data = fetch_news(stock_name)
     
     if not news_data:
         news_data = [{

@@ -234,194 +234,121 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stock News - {{ stock_name }}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <title>Stock News</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body, html {
+        body {
+            font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(180deg, #dceefb, #b0daf1);
+            background-color: #f4f4f4;
             color: #333;
         }
 
         .hero {
-            width: 100%;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
             position: relative;
-            padding: 2rem 1rem;
-        }
-
-        .background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
+            text-align: center;
+            color: white;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             background: url('{{ url_for('static', filename='stock_market_news_image.png') }}') no-repeat center center/cover;
-            filter: brightness(0.8) blur(3px);
-            z-index: -1;
         }
 
-        .hero-content h1 {
-            font-size: 3rem;
-            color: #fff;
-            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.7);
-        }
-
-        .hero-content p {
-            font-size: 1.2rem;
-            color: #f0f0f0;
+        .hero-content {
+            z-index: 2;
             max-width: 600px;
-            margin: 1rem auto;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 20px;
         }
 
         .btn {
-            margin-top: 1rem;
-            padding: 0.8rem 1.5rem;
-            background: linear-gradient(135deg, #0077cc, #005999);
-            color: white;
-            border: none;
-            border-radius: 25px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            text-decoration: none;
             display: inline-block;
-            transition: all 0.3s ease;
+            padding: 12px 24px;
+            background-color: #ff6f61;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: background 0.3s;
         }
 
         .btn:hover {
-            box-shadow: 0 8px 20px rgba(0, 119, 204, 0.4);
-            transform: translateY(-4px);
+            background-color: #e64a43;
         }
 
         .news-container {
-            background: #fff;
-            padding: 2rem;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 960px;
-            margin: 2rem auto;
-            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .news-container h1 {
-            text-align: center;
-            color: #0077cc;
-            margin-bottom: 1.5rem;
+            max-width: 900px;
+            margin: -50px auto 20px;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 10px 30px rgba(0,0,0,0.1);
         }
 
         .news-item {
-            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            transition: transform 0.2s ease-in-out;
         }
 
-        .news-item h3 {
-            margin: 0;
-            color: #0e4b7b;
+        .news-item:hover {
+            transform: scale(1.02);
         }
 
-        .news-item p {
-            margin: 5px 0;
-            font-size: 0.95rem;
+        .news-image {
+            width: 140px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 10px;
         }
 
-        .news-item a {
-            color: #0077cc;
+        .news-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .news-meta {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .read-more {
+            color: #ff6f61;
             text-decoration: none;
             font-weight: 600;
         }
 
-        .news-item a:hover {
+        .read-more:hover {
             text-decoration: underline;
-            color: #005999;
-        }
-
-        .back-link {
-            display: block;
-            text-align: center;
-            margin-top: 2rem;
-            font-weight: 600;
-            color: #0077cc;
-            text-decoration: none;
-        }
-
-        .back-link:hover {
-            color: #005999;
-        }
-
-        hr {
-            border: none;
-            border-top: 1px solid #ccc;
-            margin: 1.5rem 0;
-        }
-
-        /* Responsive Design */
-        @media screen and (max-width: 768px) {
-            .hero-content h1 {
-                font-size: 2.2rem;
-            }
-
-            .hero-content p {
-                font-size: 1rem;
-                padding: 0 1rem;
-            }
-
-            .btn {
-                padding: 0.7rem 1.2rem;
-                font-size: 0.95rem;
-            }
-
-            .news-container {
-                padding: 1.2rem;
-            }
-
-            .news-item p {
-                font-size: 0.9rem;
-            }
-        }
-
-        @media screen and (max-width: 480px) {
-            .hero-content h1 {
-                font-size: 1.8rem;
-            }
-
-            .hero-content p {
-                font-size: 0.9rem;
-            }
-
-            .btn {
-                font-size: 0.9rem;
-            }
-
-            .news-item h3 {
-                font-size: 1rem;
-            }
-
-            .news-item p, .news-item a {
-                font-size: 0.85rem;
-            }
         }
     </style>
 </head>
 <body>
-    <!-- Hero Section -->
     <div class="hero">
-        <div class="background"></div>
         <div class="hero-content">
             <h1>Stock Stories that Matter</h1>
             <p>The best investment you can make is in knowledge, for it pays the highest dividends.</p>
@@ -429,24 +356,28 @@
         </div>
     </div>
 
-    <!-- News Section -->
-    <div id="news-section" class="news-container">
-        <h1>News for {{ stock_name.upper() }}</h1>
+    <div class="news-container" id="news-section">
+        <h2>Stock News for {{ stock_name }}</h2>
 
         {% if news_data %}
-            {% for news_item in news_data %}
+            {% for news in news_data %}
                 <div class="news-item">
-                    <h3>{{ news_item.title }}</h3>
-                    <p>Publisher: {{ news_item.publisher }}</p>
-                    <a href="{{ news_item.link }}" target="_blank">Read more</a>
+                    {% if news.image %}
+                        <img src="{{ news.image }}" alt="News Image" class="news-image">
+                    {% endif %}
+                    <div>
+                        <div class="news-title">{{ news.title }}</div>
+                        <div class="news-meta">📅 Published: {{ news.providerPublishTime }} 📰 Source: {{ news.publisher }}</div>
+                        <div class="news-summary">{{ news.summary }}</div>
+                        <a class="read-more" href="{{ news.link }}" target="_blank">🔗 Read More</a>
+                    </div>
                 </div>
-                <hr>
             {% endfor %}
         {% else %}
-            <p>No news available for this stock symbol.</p>
+            <p>No news available for this stock.</p>
         {% endif %}
-
-        <a href="/index" class="back-link">← Go Back</a>
     </div>
+
+    <a href="{{ url_for('main.index') }}" >Go Back</a>
 </body>
 </html>
