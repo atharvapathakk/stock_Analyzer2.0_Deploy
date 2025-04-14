@@ -7,7 +7,6 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* General Styles */
         body {
             background: linear-gradient(135deg, #1e3c72, #2a5298);
             color: #fff;
@@ -15,23 +14,23 @@
             overflow-x: hidden;
         }
 
-        /* Navbar */
         .navbar {
             background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(10px);
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
         }
+
         .navbar-brand {
             font-weight: bold;
             font-size: 1.5rem;
             transition: 0.3s;
         }
+
         .navbar-brand:hover {
             color: #f8d210 !important;
             transform: scale(1.1);
         }
 
-        /* Glassmorphism Form Container */
         .form-container {
             max-width: 700px;
             margin: 60px auto;
@@ -42,16 +41,17 @@
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.3);
         }
+
         .form-container h2 {
             text-align: center;
             font-weight: bold;
             margin-bottom: 20px;
         }
 
-        /* Form Elements */
         .form-label {
             font-weight: 600;
         }
+
         .form-control,
         .form-select {
             background: rgba(255, 255, 255, 0.2);
@@ -60,13 +60,13 @@
             padding: 12px;
             transition: 0.3s ease-in-out;
         }
+
         .form-control:focus,
         .form-select:focus {
             background: rgba(255, 255, 255, 0.3);
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
 
-        /* Buttons */
         .btn-custom {
             width: 100%;
             margin: 10px 0;
@@ -79,15 +79,16 @@
             border-radius: 10px;
             font-size: 1rem;
         }
+
         .btn-custom i {
             margin-right: 10px;
         }
+
         .btn-custom:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 15px rgba(255, 255, 255, 0.2);
         }
 
-        /* Footer */
         footer {
             margin-top: 40px;
             background: rgba(0, 0, 0, 0.8);
@@ -96,13 +97,46 @@
             font-size: 0.9rem;
             border-top: 1px solid rgba(255, 255, 255, 0.3);
         }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .form-container {
+                margin: 30px 15px;
+                padding: 20px;
+            }
+
+            .btn-custom {
+                font-size: 0.95rem;
+                padding: 10px;
+            }
+
+            .navbar .container-fluid {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .logout-btn {
+                margin-top: 10px;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .form-container h2 {
+                font-size: 1.3rem;
+            }
+
+            .btn-custom {
+                font-size: 0.9rem;
+            }
+        }
     </style>
 </head>
 <body>
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container-fluid">
+        <div class="container-fluid d-flex flex-column flex-md-row justify-content-between align-items-center">
             <a class="navbar-brand" href="#"><i class="fas fa-chart-line"></i> Stock Info</a>
             <a class="btn btn-outline-light logout-btn" href="{{ url_for('main.logout') }}">Logout</a>
         </div>

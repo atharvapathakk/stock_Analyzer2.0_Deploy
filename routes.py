@@ -10,6 +10,9 @@ import os
 from flask import jsonify
 import requests
 
+#working on news section deepseek etc , problem is in render , hve to check env variables or the structing of fetching api is the soltuion for it 
+
+
 # Create Blueprint for the main routes
 main = Blueprint('main', __name__)
 
