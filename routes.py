@@ -118,17 +118,77 @@ def index():
 
 
 
-# Route for fetching news (ensure it's only defined once)
+import feedparser
+from flask import render_template, request
+from datetime import datetime
+import urllib.parse
+
+def fetch_news(stock_symbol):
+    """Fetch news from Yahoo Finance RSS feed"""
+    try:
+        # URL encode the stock symbol
+        encoded_symbol = urllib.parse.quote(stock_symbol)
+        rss_url = f"https://feeds.finance.yahoo.com/rss/2.0/headline?s={encoded_symbol}&region=US&lang=en-US"
+        
+        feed = feedparser.parse(rss_url)
+        news_items = []
+        
+        for entry in feed.entries[:10]:  # Get first 3 articles
+            # Parse and format the publication date
+            published = ""
+            if hasattr(entry, 'published_parsed'):
+                published = datetime(*entry.published_parsed[:6]).strftime('%Y-%m-%d %H:%M')
+            
+            news_items.append({
+                'title': entry.get('title', 'No title available'),
+                'publisher': 'Yahoo Finance',
+                'link': entry.get('link', '#'),
+                'providerPublishTime': published,
+                'summary': entry.get('summary', 'No summary available'),
+                'image': get_image_from_description(entry.get('description', ''))
+            })
+        
+        return news_items
+    
+    except Exception as e:
+        print(f"Error fetching news: {str(e)}")
+        return []
+
+def get_image_from_description(description):
+    """Extract image URL from HTML description if available"""
+    if '<img' in description:
+        start = description.find('src="') + 5
+        end = description.find('"', start)
+        return description[start:end]
+    return ''
+
 @main.route('/get_news', methods=['POST'])
 def get_news():
-    stock_symbol = request.form.get('stock_name', '').strip()
+    stock_symbol = request.form.get('stock_name', '').strip().upper()
 
     if not stock_symbol:
         return "Error: Stock symbol is required.", 400
 
     news_data = fetch_news(stock_symbol)
+    
+    if not news_data:
+        news_data = [{
+            'title': "No recent news available",
+            'publisher': "System",
+            'link': "#",
+            'providerPublishTime': datetime.now().strftime('%Y-%m-%d'),
+            'summary': f"No news found for {stock_symbol}. Try a different stock symbol.",
+            'image': ''
+        }]
+    
+    return render_template('news.html', 
+                         stock_name=stock_symbol, 
+                         news_data=news_data)
 
-    return render_template('news.html', stock_name=stock_symbol.upper(), news_data=news_data)
+
+
+
+
 
 # Route for fetching dividends (ensure it's only defined once)
 @main.route('/get_dividends', methods=['POST'])
@@ -381,30 +441,30 @@ def latest_price(stock_name):
 
 
 
-def fetch_news(stock_name):
+# def fetch_news(stock_name):
 
-    url = f"https://newsapi.org/v2/everything?q={stock_name}&sortBy=publishedAt&apiKey={NEWS_API_KEY}"
+#     url = f"https://newsapi.org/v2/everything?q={stock_name}&sortBy=publishedAt&apiKey={NEWS_API_KEY}"
 
-    try:
-        response = requests.get(url)
-        news_data = response.json()
+#     try:
+#         response = requests.get(url)
+#         news_data = response.json()
 
-        if news_data.get("status") == "ok":
-            articles = news_data.get("articles", [])
-            return [{
-                "title": article.get("title", "No Title"),
-                "providerPublishTime": article.get("publishedAt", "Unknown Date"),
-                "publisher": article.get("source", {}).get("name", "Unknown Source"),
-                "summary": article.get("description", "No summary available."),
-                "link": article.get("url"),
-                "image": article.get("urlToImage", "")
-            } for article in articles[:10]]
-        else:
-            print("News API error:", news_data.get("message", "Unknown error"))
-            return []
-    except Exception as e:
-        print("Error fetching news:", e)
-        return []
+#         if news_data.get("status") == "ok":
+#             articles = news_data.get("articles", [])
+#             return [{
+#                 "title": article.get("title", "No Title"),
+#                 "providerPublishTime": article.get("publishedAt", "Unknown Date"),
+#                 "publisher": article.get("source", {}).get("name", "Unknown Source"),
+#                 "summary": article.get("description", "No summary available."),
+#                 "link": article.get("url"),
+#                 "image": article.get("urlToImage", "")
+#             } for article in articles[:10]]
+#         else:
+#             print("News API error:", news_data.get("message", "Unknown error"))
+#             return []
+#     except Exception as e:
+#         print("Error fetching news:", e)
+#         return []
     
 def fetch_dividends(stock_name):
     try:
