@@ -3,159 +3,402 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dividend History for {{ stock_name }}</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <title>Dividend History - {{ stock_name }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        /* Reset */
-        body, html {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
+        :root {
+            --primary-blue: #0055cc;
+            --secondary-blue: #3385ff;
+            --bg-dark: #0f0f0f;
+            --card-bg: rgba(30, 30, 30, 0.95);
+            --text-light: #e0e0e0;
+            --accent-teal: #00c4b4;
+            --accent-orange: #fd7e14;
+            --accent-green: #28a745;
+            --accent-red: #dc3545;
         }
 
-        /* Background */
         body {
-            background: linear-gradient(180deg, #e3f2fd, #90caf9);
-            color: #333;
+            background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+            color: var(--text-light);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            margin: 0;
+            position: relative;
+            min-height: 100vh;
         }
 
-        /* Hero Section */
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        .navbar {
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid var(--primary-blue);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--primary-blue);
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand:hover {
+            color: var(--secondary-blue);
+            transform: translateY(-2px);
+        }
+
+        .back-btn {
+            background: var(--primary-blue);
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 8px;
+            color: #fff;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 85, 204, 0.3);
+        }
+
         .hero {
+            position: relative;
+            text-align: center;
+            color: white;
             height: 100vh;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
-            text-align: center;
-            position: relative;
+            justify-content: center;
             overflow: hidden;
-            background: url('{{ url_for('static', filename='Dividend_Analysis_Image.png') }}') no-repeat center center/cover;
         }
 
-        .overlay {
+        .hero-bg {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: url('{{ url_for('static', filename='Dividend_Analysis_Image.png') }}') no-repeat center center/cover;
+            z-index: -1;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: -1;
         }
 
         .hero-content {
-            position: relative;
+            max-width: 800px;
+            padding: 2rem;
             z-index: 2;
-            color: white;
-            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
         }
 
-        .hero-content h1 {
+        .hero h1 {
             font-size: 3.5rem;
-            margin-bottom: 15px;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8);
+            animation: fadeInDown 1s ease;
         }
 
-        .hero-content p {
-            font-size: 1.2rem;
-            margin-bottom: 25px;
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            animation: fadeInUp 1s ease;
         }
 
-        .btn {
-            background: #ff9800;
+        .btn-explore {
+            background: var(--accent-teal);
             color: white;
-            padding: 14px 28px;
+            border: none;
+            padding: 12px 30px;
             border-radius: 30px;
             font-size: 1.1rem;
             font-weight: 600;
-            text-transform: uppercase;
-            border: none;
-            cursor: pointer;
             transition: all 0.3s ease;
+            animation: fadeIn 1.5s ease;
         }
 
-        .btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0px 10px 20px rgba(255, 152, 0, 0.4);
+        .btn-explore:hover {
+            background: #00a896;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 196, 180, 0.3);
         }
 
-        /* News Section */
-        .news-container {
-            background: white;
-            padding: 40px;
+        .dividend-container {
+            max-width: 1000px;
+            margin: -80px auto 50px;
+            background: var(--card-bg);
             border-radius: 15px;
-            width: 80%;
-            max-width: 900px;
-            margin: -50px auto 30px;
-            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            animation: fadeIn 1s ease-in-out;
+            padding: 2.5rem;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 2;
         }
 
-        .news-container h1 {
-            color: #ff9800;
+        .dividend-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .dividend-header h2 {
+            font-size: 2.2rem;
             font-weight: 700;
+            color: var(--secondary-blue);
+            margin-bottom: 0.5rem;
         }
 
-        .dividend-history {
-            list-style: none;
-            padding: 0;
-            text-align: center;
-        }
-
-        .dividend-history li {
-            font-size: 1.2rem;
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .dividend-amount {
-            font-weight: bold;
-            color: #ff9800;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            font-weight: 600;
-            color: #0077cc;
-            text-decoration: none;
+        .dividend-header p {
+            color: rgba(255, 255, 255, 0.7);
             font-size: 1.1rem;
-            transition: color 0.3s ease;
         }
 
-        .back-link:hover {
-            color: #005999;
+        .dividend-item {
+            background: rgba(40, 40, 40, 0.7);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary-blue);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .dividend-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+            border-left: 4px solid var(--accent-teal);
+        }
+
+        .dividend-item .date {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .dividend-item .amount {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent-orange);
+        }
+
+        .no-dividends {
+            text-align: center;
+            padding: 2rem;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.2rem;
+        }
+
+        footer {
+            background: rgba(0, 0, 0, 0.9);
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            position: relative;
+            z-index: 1;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-20px); }
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                height: 70vh;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1.2rem;
+            }
+            
+            .dividend-container {
+                margin: -50px auto 30px;
+                padding: 1.5rem;
+            }
+            
+            .dividend-item .date {
+                font-size: 1.2rem;
+            }
+            
+            .dividend-item .amount {
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .hero {
+                height: 60vh;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Hero Section -->
+    <canvas id="particles"></canvas>
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+            <a class="navbar-brand" href="#"><i class="fas fa-chart-line"></i> Stock Insights</a>
+            <a class="btn back-btn" href="{{ url_for('main.index') }}"><i class="fas fa-arrow-left"></i> Back</a>
+        </div>
+    </nav>
+
     <div class="hero">
-        <div class="overlay"></div>
+        <div class="hero-bg"></div>
+        <div class="hero-overlay"></div>
         <div class="hero-content">
             <h1>Unlock the Power of Passive Income</h1>
-            <p>Explore Dividend Opportunities</p>
-            <a href="#news-section" class="btn">See Dividend History</a>
+            <p>Explore Dividend Opportunities for {{ stock_name.upper() }}</p>
+            <a href="#dividend-section" class="btn btn-explore">View Dividend History</a>
         </div>
     </div>
 
-    <!-- News Section -->
-    <div id="news-section" class="news-container">
-        <h1>Dividend History for {{ stock_name.upper() }}</h1>
+    <div id="dividend-section" class="dividend-container">
+        <div class="dividend-header">
+            <h2>Dividend History for {{ stock_name.upper() }}</h2>
+            <p>Track the dividend payments over time</p>
+        </div>
+
         {% if dividend_data %}
-            <ul class="dividend-history">
-                {% for date, dividend in dividend_data.items() %}
-                    <li>{{ date }}: <span class="dividend-amount">{{ dividend }}</span></li>
-                {% endfor %}
-            </ul>
+            {% for date, dividend in dividend_data.items() %}
+                <div class="dividend-item">
+                    <div class="date">{{ date }}</div>
+                    <div class="amount">{{ dividend }}</div>
+                </div>
+            {% endfor %}
         {% else %}
-            <p>No dividend data available for this stock symbol.</p>
+            <div class="no-dividends">
+                <i class="fas fa-money-bill-wave" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                <p>No dividend data available for this stock at the moment.</p>
+            </div>
         {% endif %}
-        <a href="{{ url_for('main.index') }}" class="btn btn-primary">Go Back</a>
     </div>
+
+    <footer>
+        <p>© 2025 Stock Insights App. All Rights Reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particlesArray = [];
+        const numberOfParticles = 50;
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 3 + 2;
+                this.speedX = Math.random() * 0.3 - 0.15;
+                this.speedY = Math.random() * 0.3 - 0.15;
+                this.color = ['rgba(0, 85, 204, 0.5)', 'rgba(0, 196, 180, 0.5)', 'rgba(253, 126, 20, 0.5)'][Math.floor(Math.random() * 3)];
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.size > 0.2) this.size -= 0.005;
+                if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+                if (particlesArray[i].size <= 0.2) {
+                    particlesArray.splice(i, 1);
+                    particlesArray.push(new Particle());
+                    i--;
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        init();
+        animate();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
 </body>
 </html>

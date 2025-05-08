@@ -3,60 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-</head>
+    <title>Login - Stock Insights</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #0055cc;
+            --secondary-blue: #3385ff;
+            --bg-dark: #0f0f0f;
+            --card-bg: rgba(30, 30, 30, 0.95);
+            --text-light: #e0e0e0;
+            --accent-teal: #00c4b4;
+            --accent-orange: #fd7e14;
+            --accent-green: #28a745;
+            --accent-red: #dc3545;
+        }
 
-<style>
-            * {
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', sans-serif;
         }
 
         body {
-            display: flex;
-            flex-direction: row;
-            height: 100vh;
-        }
-
-        .left-section {
-            flex: 1;
-            background-color: #f5f5f5;
-        }
-
-        .right-section {
-            flex: 1;
+            background: linear-gradient(135deg, #121212, #1e1e1e);
+            color: var(--text-light);
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #8ec5fc, #e0c3fc);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background: transparent;
         }
 
         .form-container {
             width: 100%;
             max-width: 400px;
-            background-color: #ffffff;
+            background: rgba(40, 40, 40, 0.95);
             padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            animation: fadeInUp 0.5s ease;
+            margin: 1rem;
+        }
+
+        .form-container:hover {
+            transform: translateY(-5px);
+            border-left: 4px solid var(--accent-teal);
         }
 
         .logo {
             text-align: center;
             margin-bottom: 1.5rem;
-            font-size: 24px;
-            font-weight: bold;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-blue);
         }
 
         .logo span {
-            color: #007bff;
+            color: var(--accent-teal);
         }
 
         h2 {
             text-align: center;
-            margin-bottom: 1rem;
-            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--secondary-blue);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         form {
@@ -66,36 +107,68 @@
 
         label {
             margin-bottom: 0.5rem;
-            color: #555;
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 1rem;
         }
 
         input {
             padding: 0.75rem;
             margin-bottom: 1rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
             font-size: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-teal);
+            box-shadow: 0 0 8px rgba(0, 196, 180, 0.3);
         }
 
         button {
             padding: 0.75rem;
-            background-color: #007bff;
-            color: #ffffff;
+            background: var(--primary-blue);
             border: none;
-            border-radius: 4px;
+            border-radius: 8px;
+            color: #fff;
             font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
         }
 
         button:hover {
-            background-color: #0056b3;
+            background: var(--secondary-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 85, 204, 0.3);
+        }
+
+        .sign-in-link {
+            text-align: center;
+            margin-top: 1rem;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .sign-in-link a {
+            color: var(--accent-teal);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .sign-in-link a:hover {
+            text-decoration: underline;
+            color: var(--secondary-blue);
         }
 
         .social-login {
             display: flex;
             justify-content: center;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
         }
 
         .social-login img {
@@ -103,83 +176,191 @@
             height: 40px;
             margin: 0 0.5rem;
             cursor: pointer;
+            transition: transform 0.3s ease;
         }
 
-        .sign-in-link {
-            text-align: center;
-            margin-top: 1rem;
-            color: #007bff;
+        .social-login img:hover {
+            transform: scale(1.1);
         }
 
-        .sign-in-link a {
-            color: #007bff;
-            text-decoration: none;
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .sign-in-link a:hover {
-            text-decoration: underline;
-        }
-</style>
+        @media (max-width: 768px) {
+            body::before {
+                background: rgba(0, 0, 0, 0.3);
+            }
 
+            #particles-js {
+                display: none;
+            }
+
+            body {
+                background: linear-gradient(135deg, #121212, #1e1e1e);
+            }
+
+            .form-container {
+                padding: 1.5rem;
+                margin: 0.5rem;
+            }
+
+            h2 {
+                font-size: 1.4rem;
+            }
+
+            input, button {
+                font-size: 0.9rem;
+            }
+
+            .sign-in-link {
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .form-container {
+                max-width: 90%;
+            }
+
+            h2 {
+                font-size: 1.2rem;
+            }
+
+            .logo {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .form-container, button {
+                transition: none;
+            }
+
+            #particles-js {
+                display: none;
+            }
+
+            body::before {
+                background: rgba(0, 0, 0, 0.4);
+            }
+        }
+    </style>
+</head>
 <body>
+    <div id="particles-js"></div>
 
+    <div class="form-container">
+        <div class="logo">
+            Stock<span>Insights</span>
+        </div>
+        <h2>Login</h2>
+        <form action="{{ url_for('main.login') }}" method="POST">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            <button type="submit">Login</button>
+        </form>
+        <div class="sign-in-link">
+            Don't have an account? <a href="{{ url_for('main.signup') }}">Sign up</a>
+        </div>
+        <!-- Social login placeholder (commented out for future use) -->
+        <!--
+        <div class="social-login">
+            <img src="path/to/google-icon.png" alt="Google Login">
+            <img src="path/to/facebook-icon.png" alt="Facebook Login">
+        </div>
+        -->
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const isMobile = window.innerWidth <= 768;
+            const particleConfig = {
+                "particles": {
+                    "number": {
+                        "value": isMobile ? 30 : 60,
+                        "density": {
+                            "enable": true,
+                            "value_area": 1000
+                        }
+                    },
+                    "color": {
+                        "value": ["#0055cc", "#00c4b4", "#3385ff"]
+                    },
+                    "shape": {
+                        "type": "circle"
+                    },
+                    "opacity": {
+                        "value": 0.4,
+                        "random": true
+                    },
+                    "size": {
+                        "value": 3,
+                        "random": true
+                    },
+                    "line_linked": {
+                        "enable": true,
+                        "distance": 150,
+                        "color": "#3385ff",
+                        "opacity": 0.2,
+                        "width": 1
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 1.5,
+                        "direction": "none",
+                        "random": true,
+                        "straight": false,
+                        "out_mode": "out"
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {
+                        "onhover": {
+                            "enable": !isMobile,
+                            "mode": "grab"
+                        },
+                        "onclick": {
+                            "enable": !isMobile,
+                            "mode": "push"
+                        },
+                        "resize": true
+                    },
+                    "modes": {
+                        "grab": {
+                            "distance": 140,
+                            "line_linked": {
+                                "opacity": 0.5
+                            }
+                        },
+                        "push": {
+                            "particles_nb": 2
+                        }
+                    }
+                },
+                "retina_detect": true
+            };
 
+            if (!isMobile && window.innerWidth > 576) {
+                particlesJS('particles-js', particleConfig);
+            }
 
+            function resizeParticles() {
+                const canvas = document.querySelector('#particles-js canvas');
+                if (canvas) {
+                    canvas.style.width = '100%';
+                    canvas.style.height = '100%';
+                }
+            }
 
-
-
-
-<!--    <div class="right-section">-->
-<!--        <div class="form-container">-->
-<!--            <div class="logo">-->
-<!--                Stock<span>Analyzer</span>-->
-<!--            </div>-->
-<!--            <h2>Sign Up</h2>-->
-<!--            <form>-->
-<!--                <label for="email">E-mail</label>-->
-<!--                <input type="email" id="email" name="email" placeholder="example@email.com" required>-->
-
-<!--                <label for="password">Password</label>-->
-<!--                <input type="password" id="password" name="password" placeholder="Enter your password" required>-->
-
-<!--                <button type="submit">Sign Up</button>-->
-<!--            </form>-->
-
-
-<!--            <div class="sign-in-link">-->
-<!--                Have an account? <a href="login.html">Login</a>-->
-<!--            </div>-->
-<!--        </div>-->
-<!--    </div>-->
-
-
-
-
-
-
-
-
-
-
-<div class="right-section">
-
-     <div class="form-container">
-            <div class="logo">
-                Stock<span>Analyzer</span>
-            </div>
-            <h2>Login</h2>
-
-
-    <form action="{{ url_for('main.login') }}" method="POST">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <button type="submit">Login</button>
-    </form>
-         <br>
-    <p>Don't have an account? <a href="{{ url_for('main.signup') }}">Sign up</a></p>
-</div>
+            window.addEventListener('resize', resizeParticles);
+            resizeParticles();
+        });
+    </script>
 </body>
 </html>

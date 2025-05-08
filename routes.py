@@ -13,14 +13,33 @@ import feedparser
 from flask import render_template, request
 from datetime import datetime
 import urllib.parse
+import google.generativeai as genai
 
-#working on news section deepseek etc , problem is in render , hve to check env variables or the structing of fetching api is the soltuion for it 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Create Blueprint for the main routes
 main = Blueprint('main', __name__)
 
+ALPHA_VANTAGE_API_KEY = os.getenv("ALPHA_VANTAGE_API_KEY", "MSC4JZ5TIYC8P80T")
 NEWS_API_KEY = "3db8fcc3c31e405492f6849159dad9e6"  # Sign up at https://newsapi.org
+geminiApiKey = "AIzaSyBW2Xwxxz4SK01_vUrTYhZ_8lc5p8YrT-A"
 
 
 
@@ -65,6 +84,8 @@ def login():
             flash('Login failed. Check your username and/or password.', 'danger')
 
     return render_template('login.html')
+
+
 
 @main.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -125,6 +146,26 @@ def index():
 
 
 
+
+
+#route for AI Assistant 
+@main.route("/AI_Assistant" , methods = ['GET' , 'POST'])
+def ai_assistant():
+    if request.method == 'POST':
+        user_prompt = request.form.get('user_prompt') 
+        
+
+        result = fetch_AI_Assistant(user_prompt)
+
+
+        return render_template('Ai_Assistant.html', result=result , user_prompt = " ")
+
+    return render_template('Ai_Assistant.html')
+
+
+
+
+
 @main.route('/get_news', methods=['POST'])
 def get_news():
     stock_symbol = request.form.get('stock_name', '').strip()
@@ -165,6 +206,21 @@ def get_news():
 
 
 
+
+
+@main.route("/Fake_News_Detector" , methods = ['GET' , 'POST'])
+def fakeNewsInput():
+    if request.method == 'POST':
+        news_text = request.form.get('news_text')  # Extract input from form
+        # Here you can run ML model or any logic
+        
+
+        result = fetch_fake_news_detector(news_text)
+
+
+        return render_template('fake_news_detector.html', result=result, news_text=news_text)
+
+    return render_template('fake_news_detector.html')
 
 
 
@@ -405,6 +461,14 @@ def get_BuySellSignals():
 
 
 
+
+
+
+
+
+
+
+
 def latest_price(stock_name):
     try:
         latest_price = yf.Ticker(stock_name).history(period='1d')['Close'].iloc[-1]
@@ -415,6 +479,34 @@ def latest_price(stock_name):
     except Exception as e:
         print("Error fetching latest price:", e)
         return "N/A"  # Return "N/A" if there's an error fetching the latest price
+
+
+
+
+def fetch_fake_news_detector(user_prompt):
+
+    # Configure the Gemini client
+    genai.configure(api_key="AIzaSyBW2Xwxxz4SK01_vUrTYhZ_8lc5p8YrT-A")
+
+    model = genai.GenerativeModel('gemini-1.5-pro')
+
+    serverPrompt = f"""
+You are a stock news detector. Your role is to determine if stock news provided via text/links is fake or true. Analyze the content of the provided links or text to verify its authenticity, cross-referencing with reliable sources if necessary. If the input contains both links and text, analyze both for consistency and accuracy.
+
+If the user input is unrelated to stock news thrugh texts or financial markets, respond with:
+
+'Sorry, I can only analyze stock news provided via links or text. Please provide valid stock news content.' Here is the user prompt:    {user_prompt}
+    """
+
+    # Create a chat
+    chat = model.start_chat(history=[])
+
+    response = chat.send_message(serverPrompt)
+
+    return response.text
+
+
+
 
 
 
@@ -854,88 +946,198 @@ def getTechnicalBuyAndSellSignals(stock_name):
     #
     #
     # return main(stock_name)
-
-    import numpy as np
-    import pandas as pd
     import yfinance as yf
+    import pandas as pd
+    import numpy as np
     import matplotlib.pyplot as plt
     import os
+    from datetime import datetime, timedelta
 
-    # Fetch historical stock data
-    ticker = stock_name  # Change this to your stock symbol
-    data = yf.download(ticker, start="2024-06-01", end="2025-02-01")
+    def get_stock_data(stock_symbol, period='8mo'):
+        """Fetch stock data with error handling"""
+        try:
+            end_date = datetime.now().strftime('%Y-%m-%d')
+            start_date = (datetime.now() - timedelta(days=240)).strftime('%Y-%m-%d')
+            data = yf.download(tickers=stock_symbol, start=start_date, end=end_date)
+            if data.empty:
+                raise ValueError("No data returned from yfinance")
+            return data
+        except Exception as e:
+            print(f"Error fetching stock data: {e}")
+            return None
 
-    # Moving Averages for trend detection
-    short_window = 10
-    long_window = 50
+    def calculate_support_resistance(data, window=5):
+        """Improved support/resistance calculation"""
+        data['Support'] = data['Low'].rolling(window=window, center=True).min()
+        data['Resistance'] = data['High'].rolling(window=window, center=True).max()
+        return data
 
-    # Calculate moving averages
-    data['Short_MA'] = data['Close'].rolling(window=short_window, min_periods=1).mean()
-    data['Long_MA'] = data['Close'].rolling(window=long_window, min_periods=1).mean()
+    def add_indicators(data):
+        """Calculate all technical indicators"""
+        # RSI
+        delta = data['Close'].diff()
+        gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
+        loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
+        rs = gain / loss
+        data['RSI'] = 100 - (100 / (1 + rs))
+        
+        # MACD
+        data['EMA_12'] = data['Close'].ewm(span=12, adjust=False).mean()
+        data['EMA_26'] = data['Close'].ewm(span=26, adjust=False).mean()
+        data['MACD'] = data['EMA_12'] - data['EMA_26']
+        data['Signal_Line'] = data['MACD'].ewm(span=9, adjust=False).mean()
+        
+        # Bollinger Bands (fixed calculation)
+        rolling_mean = data['Close'].rolling(window=20).mean()
+        rolling_std = data['Close'].rolling(window=20).std()
+        data['BB_Mid'] = rolling_mean
+        data['BB_Upper'] = rolling_mean + (2 * rolling_std)
+        data['BB_Lower'] = rolling_mean - (2 * rolling_std)
+        
+        # Moving Averages
+        data['MA_10'] = data['Close'].rolling(window=10).mean()
+        data['MA_50'] = data['Close'].rolling(window=50).mean()
+        
+        return data
 
-    # Initialize buy & sell signals
-    buy_signals = []
-    sell_signals = []
-    holding = False
-    last_buy_price = 0
-    max_price_after_buy = 0
+    def detect_patterns(data):
+        """Pattern detection with more reliability"""
+        data['Pattern'] = ''
+        for i in range(2, len(data)-2):
+            # Head and Shoulders
+            if (data['Close'].iloc[i-2] < data['Close'].iloc[i-1] > data['Close'].iloc[i] and
+                data['Close'].iloc[i+1] < data['Close'].iloc[i] > data['Close'].iloc[i+2] and
+                data['Close'].iloc[i-1] > data['Close'].iloc[i+1]):
+                data.loc[data.index[i], 'Pattern'] = 'Head and Shoulders Top'
+            
+            # Inverse Head and Shoulders
+            elif (data['Close'].iloc[i-2] > data['Close'].iloc[i-1] < data['Close'].iloc[i] and
+                data['Close'].iloc[i+1] > data['Close'].iloc[i] < data['Close'].iloc[i+2] and
+                data['Close'].iloc[i-1] < data['Close'].iloc[i+1]):
+                data.loc[data.index[i], 'Pattern'] = 'Inverse Head and Shoulders'
+        
+        return data
 
-    # Convert Close prices to NumPy array for efficiency
-    close_prices = data['Close'].values
+    def generate_signals(data):
+        """Generate signals with multiple confirmation criteria"""
+        data['Signal'] = 0  # 0=Hold, 1=Buy, -1=Sell
+        position = 0  # 0=No position, 1=Long
+        
+        for i in range(1, len(data)):
+            # Buy Conditions (ALL must be true)
+            buy_condition = (
+                position == 0 and
+                data['RSI'].iloc[i] < 35 and
+                data['Close'].iloc[i] < data['BB_Lower'].iloc[i] and
+                data['MACD'].iloc[i] > data['Signal_Line'].iloc[i] and
+                (data['Pattern'].iloc[i] == 'Inverse Head and Shoulders' or 
+                data['Close'].iloc[i] <= data['Support'].iloc[i])
+            )
+            
+            # Sell Conditions (ANY can trigger)
+            sell_condition = (
+                position == 1 and (
+                    data['Close'].iloc[i] >= data['Resistance'].iloc[i] or
+                    data['RSI'].iloc[i] > 70 or
+                    data['Close'].iloc[i] > data['BB_Upper'].iloc[i] or
+                    data['Pattern'].iloc[i] == 'Head and Shoulders Top' or
+                    data['MA_10'].iloc[i] < data['MA_50'].iloc[i]
+                )
+            )
+            
+            if buy_condition:
+                data.loc[data.index[i], 'Signal'] = 1
+                position = 1
+                entry_price = data['Close'].iloc[i]
+            
+            elif sell_condition and position == 1:
+                data.loc[data.index[i], 'Signal'] = -1
+                position = 0
+        
+        return data
 
-    for i in range(1, len(data)):
-        short_ma_prev, long_ma_prev = data['Short_MA'].iloc[i - 1], data['Long_MA'].iloc[i - 1]
-        short_ma_now, long_ma_now = data['Short_MA'].iloc[i], data['Long_MA'].iloc[i]
-        current_price = float(close_prices[i])
+    def plot_signals(data, stock_symbol):
+        """Enhanced visualization with all indicators"""
+        plt.figure(figsize=(16, 10))
+        
+        # Main price plot
+        plt.plot(data.index, data['Close'], label='Close Price', alpha=0.7, color='blue')
+        
+        # Plot indicators
+        plt.plot(data.index, data['MA_10'], label='10-day MA', alpha=0.5, color='orange')
+        plt.plot(data.index, data['MA_50'], label='50-day MA', alpha=0.5, color='purple')
+        plt.plot(data.index, data['BB_Upper'], '--', label='Bollinger Upper', alpha=0.3, color='gray')
+        plt.plot(data.index, data['BB_Lower'], '--', label='Bollinger Lower', alpha=0.3, color='gray')
+        
+        # Plot support/resistance
+        plt.scatter(data.index, data['Support'], color='green', label='Support', marker='_', s=100, alpha=0.5)
+        plt.scatter(data.index, data['Resistance'], color='red', label='Resistance', marker='_', s=100, alpha=0.5)
+        
+        # Plot signals
+        buy_signals = data[data['Signal'] == 1]
+        sell_signals = data[data['Signal'] == -1]
+        
+        plt.scatter(buy_signals.index, buy_signals['Close'], 
+                    color='lime', label='Buy', marker='^', s=100, alpha=1)
+        plt.scatter(sell_signals.index, sell_signals['Close'], 
+                    color='red', label='Sell', marker='v', s=100, alpha=1)
+        
+        # Formatting
+        plt.title(f"{stock_symbol} Advanced Trading Signals\n{data.index[0].date()} to {data.index[-1].date()}")
+        plt.xlabel("Date")
+        plt.ylabel("Price")
+        plt.legend(loc='upper left')
+        plt.grid(True)
+        plt.xticks(rotation=45)
+        
+        # Save plot
+        os.makedirs("static", exist_ok=True)
+        plot_path = os.path.join("static", "trading_signals.png")
+        plt.tight_layout()
+        plt.savefig(plot_path)
+        plt.close()
+        
+        print(f"Plot saved at {plot_path}")
+        return plot_path
 
-        # 📌 Advanced Buy Signal
-        if (
-                not holding
-                and short_ma_now > long_ma_now
-                and short_ma_prev <= long_ma_prev
-                and current_price > np.mean(close_prices[max(0, i - 5):i])
-        ):
-            buy_signals.append((data.index[i], current_price))
-            last_buy_price = current_price
-            max_price_after_buy = current_price
-            holding = True
+    def main(stock_symbol):
+        """Main execution function"""
+        data = get_stock_data(stock_symbol)
+        if data is not None:
+            data = calculate_support_resistance(data)
+            data = add_indicators(data)
+            data = detect_patterns(data)
+            data = generate_signals(data)
+            plot_path = plot_signals(data, stock_symbol)
+            return plot_path
+        return None
 
-            # Update max price after buying
-        if holding:
-            max_price_after_buy = max(max_price_after_buy, current_price)
+    # Example usage
+    if __name__ == "__main__":
+        stock_name = "TCS.NS"  # Tata Consultancy Services (NSE)
+        plot_path = main(stock_name)
 
-        # 📌 Advanced Sell Signal
-        if (
-                holding
-                and max_price_after_buy >= last_buy_price * 1.10
-                and current_price < max_price_after_buy * 0.97
-        ):
-            sell_signals.append((data.index[i], current_price))
-            holding = False
 
-            # Extract buy/sell dates & prices
-    buy_dates, buy_prices = zip(*buy_signals) if buy_signals else ([], [])
-    sell_dates, sell_prices = zip(*sell_signals) if sell_signals else ([], [])
 
-    # Plot the stock closing price
-    plt.figure(figsize=(12, 6))
-    plt.plot(data.index, data['Close'], label="Close Price", color='blue')
 
-    # Plot buy and sell signals
-    plt.scatter(buy_dates, buy_prices, marker='^', color='green', label='Buy Signal', s=100, alpha=1)
-    plt.scatter(sell_dates, sell_prices, marker='v', color='red', label='Sell Signal', s=100, alpha=1)
 
-    # Formatting
-    plt.title(f"{ticker} Stock Trading Signals (Advanced Strategy)")
-    plt.xlabel("Date")
-    plt.ylabel("Stock Price")
-    plt.xticks(rotation=45)
-    plt.legend()
-    plt.grid()
 
-    # **Save the plot to the static folder**
-    plot_path = os.path.join("static", "trading_signals.png")
-    plt.savefig(plot_path)
-    plt.close()  # Close the plot to free memory
+def fetch_AI_Assistant(user_prompt):
 
-    print(f"Plot saved at {plot_path}")
+
+    # Configure the Gemini client
+    genai.configure(api_key="AIzaSyBW2Xwxxz4SK01_vUrTYhZ_8lc5p8YrT-A")
+
+    model = genai.GenerativeModel('gemini-1.5-pro')
+
+    serverPrompt = f"""
+    You are a stock infomration provider for beginners or explainer of stocks concepts and also explain how your mindset should be while investing in stocks thurgh benjamin graham concepts/warren buffet dont take the name explaicitly. your role is to provide stock information or stock concepts to the user if the user input is unrelated to 
+    stock information / financial markets , respond with : sorry , i dont have permission to provide information on subject you asked . now below is the user prompt {user_prompt} 
+    """
+
+    # Create a chat
+    chat = model.start_chat(history=[])
+
+    response = chat.send_message(serverPrompt)
+
+    return response.text
